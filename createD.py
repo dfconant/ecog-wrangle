@@ -35,3 +35,23 @@ l
     		drange = range(onset-())
     		D.append(data[onsets[-1]*[dtnames[datatype]+'fs'])
     return D,labels,onsets
+    
+    
+    
+def Dat2D(Dat,datatype,align,timing,dstring,datatype):
+    
+    words = np.where(np.char.find(Dat['events']['label'], dstring) >-1)  #search for matching labels
+    phones = Dat['events']['contains'][words]                     #Access contained phones
+    alignPhones = [w[1] for w in phones]
+    label = Dat['events']['label'][alignPhones]
+    starts = Dat['events']['starts'][alignPhones]
+    
+    nFeats = Dat[datatype].size[0]
+    nTime = timing[1] -timing[0] *fs
+    nTrials = starts.size
+    D = np.empty([nFeats,nTime,nTrials]) *np.nan
+    
+    for t in range(starts)
+        D
+        D = Dat['AA']
+    

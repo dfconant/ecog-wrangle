@@ -2,7 +2,6 @@
 import scipy as sp
 import scipy.io
 import parseTranscripts as pT
-import sys
 import HTK
 import glob
 import ecogUtil
@@ -22,7 +21,7 @@ def createDat(subj,blocks,datatype):
         
         #Get events from transcription
 
-        tname = bdir+'_Transcription_final.TextGrid'
+        tname = bdir+'/'+bdir+'_transcription_final.TextGrid'
         events = pT.parseTextGrid(tname,badTimes)
         
         #Load datatypes specified
@@ -35,18 +34,19 @@ def createDat(subj,blocks,datatype):
         DatStruct = {'meta':meta,
                     'events':events,
                     'AA':AA}
-
+        
+        return DatStruct
 
         
         
 def readAA(dir):
-    elects = glob.glob(dir+'*.htk')
+    elects = glob.glob(dir+'/*.htk')
     tmp = HTK.readHTK(elects[0])
     AA = np.zeros(shape = [256,np.shape(tmp['data'])[1]])
     AAfs  = tmp['sampling_rate']
     tmp = None
     for e in elects:
-        chan = ecogUtil.wav2chan(int(e[len(dir)+3:-4])) - 1
+        chan = ecogUtil.wav2chan(int(e[len(dir)+4:-4])) - 1
         d = HTK.readHTK(e)
         AA[chan,:] = sp.nanmean(d['data'])
     return {'AA':AA, 'AAfs':AAfs}

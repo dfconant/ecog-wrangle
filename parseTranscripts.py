@@ -1,9 +1,25 @@
 # parseTranscripts.py
+
+
 # loads in audio transcriptions and extracts event times
-# Currently doesn't work with phrase tier transcripts
+# David Conant 1/6/15
+
 import numpy as np
 
 def parseTextGrid(fname,badTimes):
+# Reads in a TextGrid (used by Praat) and returns a dictionary with the events 
+# contained within, as well as their times, labels, and hierarchy.
+# Assumes a 2 tier textgrid corresponding to words and phonemes
+# Returns:
+# events (a dictionary) with keys:
+# label: an array of strings identifying each event according to the utterance
+# start: an array of the start times for each event
+# stop: an array of the stop times for each event
+# tier: an array specifying the tier (phoneme or word) for each event
+# contains: an array specifying the phonemes contained within each event
+# contained_by: an array specifying the words contiaining each event
+# position: the position of each phoneme within the word
+
     with open(fname) as tg:
         content = tg.readlines()
 
@@ -16,9 +32,10 @@ def parseTextGrid(fname,badTimes):
     t = 0;
     c = -1;
     tiers = ['phoneme','word','phrase']
+    #Loop through each line of the text file
     for line in content:
         c = c+1;
-        if 'item [2]:' in line:
+        if 'item [2]:' in line: #iterate tier as they pass
             t = 1;
         if 'item [3]:' in line:
             t = 2;
@@ -42,6 +59,8 @@ def parseTextGrid(fname,badTimes):
     contains = [-1]*label.size
     position = np.ones(label.size)*-1
     
+    
+    '''
     if t == 2:  #If this transript has a phrase tier
         phrase = np.where(tier == 'phrase')
         for ind in phrase:
@@ -57,7 +76,9 @@ def parseTextGrid(fname,badTimes):
             contains[ind] = list(np.intersect1d(startCandidates,stopCandidates))
             contains[ind].remove(ind)
             contains[ind] = np.array(contains[ind])
-            
+    '''
+    
+    #Determine hierarchy of events                
     for ind in words:
         if t == 1: #If no phrase tier, word is highest tier
             position[ind] = 1
@@ -76,10 +97,8 @@ def parseTextGrid(fname,badTimes):
             contained_by[i] = ind
 
         
-    for ind in phones:
-        
-        #Find words and prases that is contained by
-        
+    for ind in phones:       
+        #Find phonemes in the same word, position is order in list   
         sameWord = np.where(np.asarray(contained_by) == contained_by[ind])[0]
         position[ind] = np.where(sameWord == ind)[0] + 1
         

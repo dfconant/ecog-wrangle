@@ -6,10 +6,14 @@
 
 import numpy as np
 
-def parseTextGrid(fname,badTimes):
+def parseTextGrid(fname):
 # Reads in a TextGrid (used by Praat) and returns a dictionary with the events 
 # contained within, as well as their times, labels, and hierarchy.
 # Assumes a 2 tier textgrid corresponding to words and phonemes
+
+# Parameters:
+# fname: filename of the TextGrid
+
 # Returns:
 # events (a dictionary) with keys:
 # label: an array of strings identifying each event according to the utterance

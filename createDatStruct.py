@@ -27,7 +27,7 @@ def createDat(subj,blocks,datatype):
         #Load datatypes specified
         if 1 in datatype:
             neural = readAA(bdir+'/HilbAA_70to150_8band')
-            meta = {'AAfs',neural['AAfs']}
+            meta['AAfs'] = neural['AAfs']
             AA = neural['AA']
 
 
@@ -48,5 +48,5 @@ def readAA(dir):
     for e in elects:
         chan = ecogUtil.wav2chan(int(e[len(dir)+4:-4])) - 1
         d = HTK.readHTK(e)
-        AA[chan,:] = sp.nanmean(d['data'])
+        AA[chan,:] = sp.nanmean(d['data'],axis=0)
     return {'AA':AA, 'AAfs':AAfs}

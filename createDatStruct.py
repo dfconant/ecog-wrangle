@@ -22,7 +22,7 @@ def createDat(subj,blocks,datatype):
         #Get events from transcription
 
         tname = bdir+'/'+bdir+'_transcription_final.TextGrid'
-        events = pT.parseTextGrid(tname,badTimes)
+        events = pT.parseTextGrid(tname)
         
         #Load datatypes specified
         if 1 in datatype:

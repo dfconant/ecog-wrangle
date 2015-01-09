@@ -13,7 +13,7 @@ import parseTranscripts as pT
 import math
 
 
-
+'''
 def matDat2D(matDat,datatype,align):
     dtnames = np.array(['AA','ProdAud','StimAud','Kin','Timeseries','ANIN4']);
     Dat = sp.io.loadmat(matDat)
@@ -32,16 +32,21 @@ def matDat2D(matDat,datatype,align):
     for e in range(events):
     	if events[e][-1] is '2':
     		labels.append(events[e]['Phrase'])
-    		onsetS=events[e]['Words']['Phones'][align][StartTime]
+    		onsetS=events[e]['Words']['Phones'][align]
     		onset = onsetS*[dtnames[datatype]+'fs'] 
 
     return D,labels,onsets
+'''
     
     
-def Dat2D(Dat,datatype,align,timing,dstring,zscore):    
+def Dat2D(Dat,datatype,align,timing,dstring,zscore,notstring):    
     
     #Get events of interest
-    words = np.where(np.char.find(Dat['events']['label'], dstring) >-1)  #search for matching labels
+    words = np.where(np.char.find(Dat['events']['label'], dstring) >-1)[0]  #search for matching labels
+    exclude = np.where(np.char.find(Dat['events']['label'], notstring) >-1)[0] #and exclude strings not desired
+    words = np.delete(words,[np.nonzero(np.in1d(words,exclude))[0]])
+    words = np.delete(words,np.where(Dat['events']['tier'][words] == 'phoneme')[0])
+
     phones = Dat['events']['contains'][words]                     #Access contained phones
     alignPhones = [w[align-1] for w in phones]                   #Use specified phone from align
     
@@ -67,7 +72,7 @@ def Dat2D(Dat,datatype,align,timing,dstring,zscore):
     
     #Use start times and timing to extract data    
     for t in range(nTrials):
-        drange = range(int(math.floor((start[t]-timing[0])*fs)),int(math.floor((start[t]+timing[1])*fs)))
+        drange = range(int(round((start[t]-timing[0])*fs)),int(round((start[t]+timing[1])*fs)))
         D[:,:,t] = data[:,drange]
     
     meta = {'label':label,
